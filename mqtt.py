@@ -6,8 +6,8 @@ from Adafruit_IO import MQTTClient
 configFile = open("config")
 config = configFile.read().split("\n")
 
-AIO_USERNAME = config[0].strip().split("=")[1]
-AIO_KEY = config[1].strip().split("=")[1]
+AIO_USERNAME = config[0].strip().split("=")[-1]
+AIO_KEY = config[1].strip().split("=")[-1]
 
 configFile.close()
 
