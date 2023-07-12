@@ -81,12 +81,19 @@ print("========================", end="\n\n")
 
 adaUsername = input("Please enter your Adafruit IO username: ")
 adaKey = input("Please enter your Adafruit IO key: ")
-portName = input("Please enter the name of the port that your hardware is connected to: ")
+portName = input("Please enter the name of the port that the AIoT Kit is connected to: ")
 
 try:
     settingFile = open("config", "w")
 except:
-    print("Cannot write settings!")
+    print("Cannot write settings! Please ensure that write permission is allowed.")
+    print("Alternatively, you can open the 'config' file with these:")
+    print()
+    print("USERNAME=[your Adafruit IO username]")
+    print("KEY=Your Adafruit IO Key")
+    print("PORT=[Name of the port that the AIoT Kit is connected to]")
+    print()
+    print("Exiting...")
     sys.exit()
 
 settingFile.write(f"USERNAME={adaUsername}\n")
