@@ -3,10 +3,13 @@ import random
 import sys
 from Adafruit_IO import MQTTClient
 
-AIO_USERNAME = "Afihu"
-temp = open("key")
-AIO_KEY = temp.read()
-temp.close()
+configFile = open("config")
+config = configFile.read().split("\n")
+
+AIO_USERNAME = config[0].strip().split("=")[1]
+AIO_KEY = config[1].strip().split("=")[1]
+
+configFile.close()
 
 def connected(client):
     client.subscribe("lightsensor")
