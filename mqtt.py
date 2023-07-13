@@ -2,6 +2,7 @@ import time
 import random
 import sys
 from Adafruit_IO import MQTTClient
+from pushbullet import PushBullet
 
 configFile = open("config")
 config = configFile.read().split("\n")
@@ -9,7 +10,18 @@ config = configFile.read().split("\n")
 AIO_USERNAME = config[0].strip().split("=")[-1]
 AIO_KEY = config[1].strip().split("=")[-1]
 
+#This is where you put you PushBullet device access token
+DEVICE_ACCESS_TOKEN = ""
+
+#Create a PushBullet Instance with the access token
+pb = PushBullet(DEVICE_ACCESS_TOKEN)
 configFile.close()
+
+# Get the list of devices associated with the PushBullet account
+devices = pb.devices
+
+# Get the device you want to push to
+device = devices[0] # Change the index to the device you want
 
 def connected(client):
     client.subscribe("lightsensor")
@@ -93,6 +105,8 @@ while True:
             reservoir -= 10
             client.publish("wateramount",10)
         client.publish("reservoir", reservoir)
-    
-    if reservoir <= 0: reservoir = 100
+
+    #Notification with PushBullet (Extra feature 1)
+    if(reservoir <= 0):
+      pb.push_note("Test Notification", "Water ran out, request refill", device=device)
     time.sleep(12)
