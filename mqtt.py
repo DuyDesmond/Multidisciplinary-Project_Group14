@@ -69,7 +69,7 @@ def Sensor_Checkup(sun_sensor_check, rain_sensor_check, moist_sensor_check, temp
     return sensor_list
 
 reservoir = 100
-Mal_noti_halt = 0
+malfunctionNotified = False
 
 while True:  
     # Reservoir amount
@@ -134,23 +134,23 @@ while True:
     #Notification with PushBullet (Extra feature 1)
     if PUSH_BULLET_TOGGLE:
         if(reservoir <= 0):
-            pb.push_note("Water ran out, ", "Request refill", device=device)
+            pb.push_note("Water ran out, ", "Requesting refill", device=device)
     
         #Rain-dependent turn off
         if (rain == 1):
-            pb.push_note("Rain detected","Temporarily turn off watering system", device=device)
+            pb.push_note("Rain detected", "Watering system turned off temporarily", device=device)
     
         #Nighttime turn off
         if (sun == 0):
-            pb.push_note("Nighttime mode", "No more sunlight detected, turning off system for the night", device=device)
+            pb.push_note("Nighttime mode", "Sunlight undetected, turning off the system for the night", device=device)
 
         #Sensor malfunction notification
-        if (Mal_noti_halt == 0): 
+        if not malfunctionNotified: 
             if (Sun_sensor_check == False or Rain_sensor_check == False or Moist_sensor_check == False or Temp_sensor_check == False):
                 pb.push_note("One or more of the sensors may not be functioning correctly", "Request checkup", device=device)
                 print("Detected System Anomaly, Printing Out Anomaly Location...")
                 print("f{sensor_list}")
-                Mal_noti_halt += 1
+                malfunctionNotified = True
 
     #Pause for 12 seconds
     time.sleep(12)
