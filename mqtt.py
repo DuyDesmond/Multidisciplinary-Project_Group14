@@ -31,6 +31,7 @@ def connected(client):
     client.subscribe("rainsensor")
     client.subscribe("reservoir")
     client.subscribe("tempsensor")
+    client.subscribe("schedule")
     print("Server connected ...")
 
 def subscribe(client , userdata , mid , granted_qos):
@@ -42,7 +43,10 @@ def disconnected(client):
 
 def message(client , feed_id , payload):
     print(f"Received payload from \"{feed_id}\": {payload}")
-    
+    if (feed_id == "schedule"):
+        print(f"Manual timeout override: \"{payload}\"")
+        time.sleep(int(payload))
+
 client = MQTTClient(AIO_USERNAME , AIO_KEY)
 
 client.on_connect = connected  #callback
@@ -118,8 +122,6 @@ while True:
         client.publish("moistsensor", 100)
         time.sleep(1)
         client.publish("on-slash-off", 0)
-        time.sleep(1)
-        client.publish("wateramount",0)
         time.sleep(1)
     # No rain
     else:
