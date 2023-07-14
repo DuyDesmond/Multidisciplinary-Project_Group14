@@ -2,8 +2,9 @@ import time
 import random
 import sys
 from Adafruit_IO import MQTTClient
+import plant_type
 
-configFile = open("config")
+configFile = open("Multidisciplinary-Project_Group14\config")
 config = configFile.read().split("\n")
 
 AIO_USERNAME = config[0].strip().split("=")[-1]
@@ -20,6 +21,7 @@ def connected(client):
     client.subscribe("tempsensor")
     client.subscribe("wateramount")
     client.subscribe("schedule")
+    client.subscribe("comm")
     print("Server connected ...")
 
 def subscribe(client , userdata , mid , granted_qos):
@@ -67,36 +69,34 @@ while True:
 
     # Rain
     if rain == 1:
-        client.publish("tempsensor", temp-2)
+        temp -= 2
+        client.publish("tempsensor", temp)
         time.sleep(1)
+        if (temp < int(plant_type.lo_temp))or(temp > int (plant_type.hi_temp)):
+            client.publish("comm", "Not optimal temperature")
+        else:
+            client.publish("comm", "Working condition")
         client.publish("moistsensor", 100)
         time.sleep(1)
         client.publish("on-slash-off", 0)
         time.sleep(1)
-        client.publish("wateramount",0)
+        client.publish("wateramount", 0)
         time.sleep(1)
     # No rain
     else:
         client.publish("tempsensor", temp)
-        time.sleep(1)   
-        moisture = random.randint(50,99)
+        time.sleep(1)
+        if (temp < int(plant_type.lo_temp))or(temp > int (plant_type.hi_temp)):
+            client.publish("comm", "Not optimal temperature")
+        else:
+            client.publish("comm", "Working condition")
         client.publish("on-slash-off", 1)
         time.sleep(1)
+        moisture = random.randint(50,99)
         client.publish("moistsensor", moisture)
         time.sleep(1)
-        
-        if moisture >= 85: 
-            reservoir -= 5
-            client.publish("wateramount",5)           
-        
-        elif moisture <= 60: 
-            reservoir -= 15
-            client.publish("wateramount",15)
-        
-        else: 
-            reservoir -= 10
-            client.publish("wateramount",10)
-        client.publish("reservoir", reservoir)
+        reservoir -= int(plant_type.water_v)
+        client.publish("wateramount", int(plant_type.water_v))          
     
     if reservoir <= 0: reservoir = 100
     time.sleep(12)

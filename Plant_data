@@ -1,18 +1,27 @@
 ####Add-in format
 Name
-    Temp
-    Water
+    Low temp
+	High temp
+    Water (liter)
     Place
 ################
 tomato
-	21-24 °C
-	1 Liter 
+	21
+	24
+	1 
 	Full sun (Avg >= 8 hr/day)
 carrot
-	10-27°C
-	3 Liter
+	10
+	27
+	3 
 	Full sun (Avg 6-10 hr/day)
 lemon
-	24-30°C
-	2 Liter
+	24
+	30
+	2 
 	Full sun (Avg 6-8 hr/day)
+jasmine
+	20
+	30
+	1 
+	Full sun / Part shade
