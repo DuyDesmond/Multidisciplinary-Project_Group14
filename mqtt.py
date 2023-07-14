@@ -10,12 +10,13 @@ config = configFile.read().split("\n")
 AIO_USERNAME = config[0].strip().split("=")[-1]
 AIO_KEY = config[1].strip().split("=")[-1]
 
+configFile.close()
+
 #This is where you put you PushBullet device access token
 DEVICE_ACCESS_TOKEN = ""
 
 #Create a PushBullet Instance with the access token
 pb = PushBullet(DEVICE_ACCESS_TOKEN)
-configFile.close()
 
 # Get the list of devices associated with the PushBullet account
 devices = pb.devices
@@ -30,7 +31,6 @@ def connected(client):
     client.subscribe("rainsensor")
     client.subscribe("reservoir")
     client.subscribe("tempsensor")
-    client.subscribe("wateramount")
     print("Server connected ...")
 
 def subscribe(client , userdata , mid , granted_qos):
@@ -53,7 +53,21 @@ client.on_subscribe = subscribe
 client.connect()
 client.loop_background()
 
+#Detect which sensor has malfunctioned
+def Sensor_Checkup(sun_sensor_check, rain_sensor_check, moist_sensor_check, temp_sensor_check):
+    sensor_list = []
+    if sun_sensor_check == False:
+        sensor_list.append("Sun sensor")
+    if rain_sensor_check == False:
+        sensor_list.append("Rain sensor")
+    if moist_sensor_check == False:
+        sensor_list.append("Moist sensor")
+    if temp_sensor_check == False:
+        sensor_list.append("Temp sensor")
+    return sensor_list
+
 reservoir = 100
+Mal_noti_halt = 0
 
 while True:  
     # Reservoir amount
@@ -65,13 +79,37 @@ while True:
     client.publish("lightsensor", sun)
     client.publish("rainsensor", rain)
     time.sleep(3)
+
+    #Check if sensors work
     
+    #sun sensor
+    if (isinstance(sun, int)): 
+        Sun_sensor_check = True
+    else: Sun_sensor_check = False
+    
+    #rain sensor
+    if (isinstance(rain, int)): 
+        Rain_sensor_check = True
+    else: Rain_sensor_check = False
+
+
     # Daytime  
     if sun == 1:  
         temp = random.randint(30, 35)
     # Nighttime
     else:
         temp = random.randint(25,29)
+
+    #temperature sensor
+    if (isinstance(temp, int)): 
+        Temp_sensor_check = True
+    else: Temp_sensor_check = False
+
+    #When moisture data comes in
+    #moisture sensor
+    if (isinstance(moisture, int)): 
+        Moist_sensor_check = True
+    else: Moist_sensor_check = False
 
     # Rain
     if rain == 1:
@@ -108,5 +146,19 @@ while True:
 
     #Notification with PushBullet (Extra feature 1)
     if(reservoir <= 0):
-      pb.push_note("Test Notification", "Water ran out, request refill", device=device)
+        pb.push_note("Water ran out, ", "Request refill", device=device)
+    #Rain-dependent turn off
+    if (rain == 1):
+        pb.push_note("Rain detected","Temporarily turn off watering system", device=device)
+    #Nighttime turn off
+    if (sun == 0):
+        pb.push_note("Nighttime mode", "No more sunlight detected, turning off system for the night", device=device)
+    #Sensor malfunction notification
+    if (Mal_noti_halt == 0): 
+        if (Sun_sensor_check == False or Rain_sensor_check == False or Moist_sensor_check == False or Temp_sensor_check == False):
+            pb.push_note("One or more of the sensors may not be functioning correctly", "Request checkup", device=device)
+            print("Detected System Anomaly, Printing Out Anomaly Location...")
+            print("f{sensor_list}")
+            Mal_noti_halt += 1
+    #Pause for 12 seconds
     time.sleep(12)

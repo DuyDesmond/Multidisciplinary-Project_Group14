@@ -20,8 +20,9 @@ Before you proceed, ensure that you have Python 3.8 installed with these librari
 - Pillow
 - opencv-python
 - pyserial
+- pushbullet.py
 
-A free account on [Adafruit IO](https://io.adafruit.com/) as well as the AIoT Kit is also required.  
+A free account on [Adafruit IO](https://io.adafruit.com/) and [Pushbullet](https://www.pushbullet.com/) as well as the AIoT Kit is also required. You will also need to install the PushBullet application on your Device  
 
 ### Installation
 #### Connecting to the AIoT Kit
