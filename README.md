@@ -8,6 +8,7 @@ This is a demo for the Multidisciplinary Project Lab.
 - **Automatic Watering**: Watering is done automatically based on soil moisture.
 - **Plant Detection**: Watering is only done if a plant is detected at the plot.
 - **Reservoir Monitoring**: Automatically monitor pump reservoir and warns if it gets empty.
+- **(Optional) Notification**: Sends notification about various system event to your device.
 
 ## Getting Started
 ### Prerequisites
@@ -22,7 +23,14 @@ Before you proceed, ensure that you have Python 3.8 installed with these librari
 - pyserial
 - pushbullet.py
 
-A free account on [Adafruit IO](https://io.adafruit.com/) and [Pushbullet](https://www.pushbullet.com/) as well as the AIoT Kit is also required. You will also need to install the PushBullet application on your Device  
+A free account on [Adafruit IO](https://io.adafruit.com/) as well as the AIoT Kit is also required. 
+
+### Optional Dependencies
+#### Pushbullet
+
+[Pushbullet](https://www.pushbullet.com/) allows notification about various system events to be sent to your device.  
+The pushbullet.py library is required to enable this feature as well as the Pushbullet application to be installed on your device.  
+This feature can be disabled during setup.
 
 ### Installation
 #### Connecting to the AIoT Kit
