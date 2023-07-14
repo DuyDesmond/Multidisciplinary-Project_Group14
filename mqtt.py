@@ -2,27 +2,25 @@ import time
 import random
 import sys
 from Adafruit_IO import MQTTClient
-from pushbullet import PushBullet
 
 configFile = open("config")
 config = configFile.read().split("\n")
 
 AIO_USERNAME = config[0].strip().split("=")[-1]
 AIO_KEY = config[1].strip().split("=")[-1]
+PUSH_BULLET_TOGGLE = True if config[3].strip().split("=")[-1] == "true" else False
+
+if PUSH_BULLET_TOGGLE:
+    from pushbullet import PushBullet
+    DEVICE_ACCESS_TOKEN = config[4].strip().split("=")[-1]
+
+    #Create a PushBullet Instance with the access token
+    pb = PushBullet(DEVICE_ACCESS_TOKEN)
+
+    # Get the device you want to push to
+    device = pb.get_device(config[5].strip().split("=")[-1])
 
 configFile.close()
-
-#This is where you put you PushBullet device access token
-DEVICE_ACCESS_TOKEN = ""
-
-#Create a PushBullet Instance with the access token
-pb = PushBullet(DEVICE_ACCESS_TOKEN)
-
-# Get the list of devices associated with the PushBullet account
-devices = pb.devices
-
-# Get the device you want to push to
-device = devices[0] # Change the index to the device you want
 
 def connected(client):
     client.subscribe("lightsensor")
@@ -132,35 +130,27 @@ while True:
         time.sleep(1)
         client.publish("moistsensor", moisture)
         time.sleep(1)
-        
-        if moisture >= 85: 
-            reservoir -= 5
-            client.publish("wateramount",5)           
-        
-        elif moisture <= 60: 
-            reservoir -= 15
-            client.publish("wateramount",15)
-        
-        else: 
-            reservoir -= 10
-            client.publish("wateramount",10)
-        client.publish("reservoir", reservoir)
 
     #Notification with PushBullet (Extra feature 1)
-    if(reservoir <= 0):
-        pb.push_note("Water ran out, ", "Request refill", device=device)
-    #Rain-dependent turn off
-    if (rain == 1):
-        pb.push_note("Rain detected","Temporarily turn off watering system", device=device)
-    #Nighttime turn off
-    if (sun == 0):
-        pb.push_note("Nighttime mode", "No more sunlight detected, turning off system for the night", device=device)
-    #Sensor malfunction notification
-    if (Mal_noti_halt == 0): 
-        if (Sun_sensor_check == False or Rain_sensor_check == False or Moist_sensor_check == False or Temp_sensor_check == False):
-            pb.push_note("One or more of the sensors may not be functioning correctly", "Request checkup", device=device)
-            print("Detected System Anomaly, Printing Out Anomaly Location...")
-            print("f{sensor_list}")
-            Mal_noti_halt += 1
+    if PUSH_BULLET_TOGGLE:
+        if(reservoir <= 0):
+            pb.push_note("Water ran out, ", "Request refill", device=device)
+    
+        #Rain-dependent turn off
+        if (rain == 1):
+            pb.push_note("Rain detected","Temporarily turn off watering system", device=device)
+    
+        #Nighttime turn off
+        if (sun == 0):
+            pb.push_note("Nighttime mode", "No more sunlight detected, turning off system for the night", device=device)
+
+        #Sensor malfunction notification
+        if (Mal_noti_halt == 0): 
+            if (Sun_sensor_check == False or Rain_sensor_check == False or Moist_sensor_check == False or Temp_sensor_check == False):
+                pb.push_note("One or more of the sensors may not be functioning correctly", "Request checkup", device=device)
+                print("Detected System Anomaly, Printing Out Anomaly Location...")
+                print("f{sensor_list}")
+                Mal_noti_halt += 1
+
     #Pause for 12 seconds
     time.sleep(12)

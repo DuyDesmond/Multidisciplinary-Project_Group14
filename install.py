@@ -2,17 +2,23 @@ print("========================")
 print("Starting up...")
 print("========================", end="\n\n")
 
+enablePushBullet = input("We support Pushbullet for sending notification. Do you want to enable Pushbullet (y/n)? ")
+print()
+
 from time import sleep
 from platform import python_version_tuple
 import os
 import sys
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-librariesStatus = [True for _ in range(5)]
 librariesName = ["adafruit-io", "tensorflow", "keras", "opencv-python", "pyserial"]
-
 TIME_DELAY = 0.3
 flag = False
+
+if enablePushBullet == "y":
+    librariesName.append("pushbullet.py")
+
+librariesStatus = [True for _ in range(len(librariesName))]
 
 try:
     import Adafruit_IO
@@ -44,6 +50,13 @@ except:
     librariesStatus[4] = False
     flag = True
 
+if enablePushBullet == "y":
+    try: 
+        from pushbullet import PushBullet
+    except:
+        librariesStatus[5] = False
+        flag = True
+
 sleep(TIME_DELAY) #slowing down the script
 
 print("Checking Python version...")
@@ -61,15 +74,15 @@ else:
 
 sleep(TIME_DELAY)
 
-print("Checking Python Libraries...")
+print("Checking Python libraries...")
 
 sleep(TIME_DELAY)
 
-for index in range(5):
+for index in range(len(librariesName)):
     print(f"{librariesName[index]} - {'OK' if librariesStatus[index] == True else 'Not found. Please check if you have installed this library correctly.'}")
     sleep(TIME_DELAY)
 
-print("")
+print()
 
 if flag:
     print("Please resolve the issue(s) above before trying again. Exiting...")
@@ -82,6 +95,27 @@ print("========================", end="\n\n")
 adaUsername = input("Please enter your Adafruit IO username: ")
 adaKey = input("Please enter your Adafruit IO key: ")
 portName = input("Please enter the name of the port that the AIoT Kit is connected to: ")
+
+if enablePushBullet == "y":   
+    while True:
+        pushbulletKey = input("Please enter your Pushbullet key: ")
+    
+        try:
+            pb = PushBullet(pushbulletKey)
+            break
+        except:
+            print("Invalid Pushbullet key. Please try again.", end="\n")
+    
+    devices = pb.devices
+
+    print()
+    print("List of devices associated with this Pushbullet key:")
+    
+    for index in range(len(devices)):
+        print(f"[{index}]: {devices[index].nickname}")
+    
+    print()    
+    selectedPBDevice = pb.devices[int(input(f"Please enter the index of the device you want the notifications to be sent to (0 - {len(devices)-1}): "))].nickname
 
 try:
     settingFile = open("config", "w")
@@ -96,11 +130,21 @@ except:
     print("Exiting...")
     sys.exit()
 
-settingFile.write(f"USERNAME={adaUsername}\n")
-settingFile.write(f"KEY={adaKey}\n")
+settingFile.write(f"AIO_USERNAME={adaUsername}\n")
+settingFile.write(f"AIO_KEY={adaKey}\n")
 settingFile.write(f"PORT={portName}\n")
+
+if enablePushBullet == "y":
+    settingFile.write(f"ENABLE_PUSH_BULLET=true\n")
+    settingFile.write(f"PUSH_BULLET_TOKEN={pushbulletKey}\n")
+    settingFile.write(f"PUSH_BULLET_DEVICE={selectedPBDevice}\n")
+else:
+    settingFile.write(f"ENABLE_PUSH_BULLET=false\n")
+    settingFile.write(f"PUSH_BULLET_TOKEN=\n")
+    settingFile.write(f"PUSH_BULLET_DEVICE=\n")
+
 settingFile.close()
 
 sleep(TIME_DELAY)
-print("")
+print()
 print("Setup complete! Exiting...")
