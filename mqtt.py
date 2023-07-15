@@ -78,8 +78,6 @@ while True:
             client.publish("comm", "Working condition")
         client.publish("moistsensor", 100)
         time.sleep(1)
-        client.publish("on-slash-off", 0)
-        time.sleep(1)
         client.publish("wateramount", 0)
         time.sleep(1)
     # No rain
@@ -90,8 +88,6 @@ while True:
             client.publish("comm", "Not optimal temperature")
         else:
             client.publish("comm", "Working condition")
-        client.publish("on-slash-off", 1)
-        time.sleep(1)
         moisture = random.randint(50,99)
         client.publish("moistsensor", moisture)
         time.sleep(1)
