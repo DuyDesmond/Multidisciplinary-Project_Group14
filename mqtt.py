@@ -11,7 +11,8 @@ AIO_KEY = config[1].strip().split("=")[-1]
 PUSH_BULLET_TOGGLE = True if config[3].strip().split("=")[-1] == "true" else False
 
 if PUSH_BULLET_TOGGLE:
-    from pushbullet import PushBullet
+    #Imports Pushbullet library if the user wishes to have notifications
+    from pushbullet import PushBullet 
     DEVICE_ACCESS_TOKEN = config[4].strip().split("=")[-1]
 
     #Create a PushBullet Instance with the access token
@@ -101,6 +102,7 @@ while True:
     # Nighttime
     else:
         temp = random.randint(25,29)
+        #Should add a line to keep the pump from functioning here
 
     #temperature sensor
     if (isinstance(temp, int)): 
@@ -136,20 +138,22 @@ while True:
         if(reservoir <= 0):
             pb.push_note("Water ran out, ", "Requesting refill", device=device)
     
-        #Rain-dependent turn off
+        #Rain-detection notification 
         if (rain == 1):
-            pb.push_note("Rain detected", "Watering system turned off temporarily", device=device)
+            pb.push_note("Rain detected", "Pump will stop functioning", device=device)
     
-        #Nighttime turn off
+        #Nighttime turn off (It is recommended that smart watering systems turn off at night)
         if (sun == 0):
-            pb.push_note("Nighttime mode", "Sunlight undetected, turning off the system for the night", device=device)
+            pb.push_note("Nighttime mode", "Sunlight undetected, stop watering for the night", device=device)
 
         #Sensor malfunction notification
         if not malfunctionNotified: 
             if (Sun_sensor_check == False or Rain_sensor_check == False or Moist_sensor_check == False or Temp_sensor_check == False):
                 pb.push_note("One or more of the sensors may not be functioning correctly", "Request checkup", device=device)
-                print("Detected System Anomaly, Printing Out Anomaly Location...")
-                print("f{sensor_list}")
+                print("Detected System Anomaly, Locating Abnormal Sensor(s)...")
+                print("Abnormal sensor(s) include: ")
+                AbnormalSensorList = Sensor_Checkup(Sun_sensor_check, Rain_sensor_check, Moist_sensor_check, Temp_sensor_check)
+                for index in AbnormalSensorList: print("Abnormal sensor(s) include: " + ', '.join(AbnormalSensorList))
                 malfunctionNotified = True
 
     #Pause for 12 seconds
