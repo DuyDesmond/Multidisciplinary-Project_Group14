@@ -71,6 +71,8 @@ def Sensor_Checkup(sun_sensor_check, rain_sensor_check, moist_sensor_check, temp
 
 reservoir = 100
 malfunctionNotified = False
+is_daytime = True
+is_rainy = False
 
 while True:  
     # Reservoir amount
@@ -102,6 +104,7 @@ while True:
     # Nighttime
     else:
         temp = random.randint(25,29)
+        is_daytime = False
         #Should add a line to keep the pump from functioning here
 
     #temperature sensor
@@ -123,6 +126,7 @@ while True:
         time.sleep(1)
         client.publish("on-slash-off", 0)
         time.sleep(1)
+        is_rainy = True
     # No rain
     else:
         client.publish("tempsensor", temp)
@@ -139,11 +143,11 @@ while True:
             pb.push_note("Water ran out, ", "Requesting refill", device=device)
     
         #Rain-detection notification 
-        if (rain == 1):
+        if is_rainy:
             pb.push_note("Rain detected", "Pump will stop functioning", device=device)
     
         #Nighttime turn off (It is recommended that smart watering systems turn off at night)
-        if (sun == 0):
+        if not is_daytime:
             pb.push_note("Nighttime mode", "Sunlight undetected, stop watering for the night", device=device)
 
         #Sensor malfunction notification
