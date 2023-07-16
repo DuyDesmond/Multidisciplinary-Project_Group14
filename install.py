@@ -2,7 +2,7 @@ print("========================")
 print("Starting up...")
 print("========================", end="\n\n")
 
-enablePushBullet = input("We support Pushbullet for sending notification. Do you want to enable Pushbullet (y/n)? ")
+enablePushBullet = True if input("We support Pushbullet for sending notification. Do you want to enable Pushbullet (y/n)? ") == "y" else False
 print()
 
 from time import sleep
@@ -15,7 +15,7 @@ librariesName = ["adafruit-io", "tensorflow", "keras", "opencv-python", "pyseria
 TIME_DELAY = 0.3
 flag = False
 
-if enablePushBullet == "y":
+if enablePushBullet == True:
     librariesName.append("pushbullet.py")
 
 librariesStatus = [True for _ in range(len(librariesName))]
@@ -50,7 +50,7 @@ except:
     librariesStatus[4] = False
     flag = True
 
-if enablePushBullet == "y":
+if enablePushBullet == True:
     try: 
         from pushbullet import PushBullet
     except:
@@ -66,10 +66,10 @@ sleep(TIME_DELAY)
 pythonVersion = python_version_tuple()
 print(f"Python {'.'.join(pythonVersion)}", end=" - ")
 
-if pythonVersion[0] == "3" and pythonVersion[1] == "8":
+if pythonVersion[0] == "3" and pythonVersion[1] == "11":
     print("OK", end="\n\n")
 else:
-    print("Mismatched Python version, expected Python 3.8", end="\n\n")
+    print("Mismatched Python version, expected Python 3.11", end="\n\n")
     flag = True
 
 sleep(TIME_DELAY)
@@ -96,7 +96,7 @@ adaUsername = input("Please enter your Adafruit IO username: ")
 adaKey = input("Please enter your Adafruit IO key: ")
 portName = input("Please enter the name of the port that the AIoT Kit is connected to: ")
 
-if enablePushBullet == "y":   
+if enablePushBullet == True:   
     while True:
         pushbulletKey = input("Please enter your Pushbullet key: ")
     
@@ -137,7 +137,7 @@ settingFile.write(f"AIO_USERNAME={adaUsername}\n")
 settingFile.write(f"AIO_KEY={adaKey}\n")
 settingFile.write(f"PORT={portName}\n")
 
-if enablePushBullet == "y":
+if enablePushBullet == True:
     settingFile.write(f"ENABLE_PUSH_BULLET=true\n")
     settingFile.write(f"PUSH_BULLET_TOKEN={pushbulletKey}\n")
     settingFile.write(f"PUSH_BULLET_DEVICE={selectedPBDevice}\n")

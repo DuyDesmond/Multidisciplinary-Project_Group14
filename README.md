@@ -13,12 +13,11 @@ This is a demo for the Multidisciplinary Project Lab.
 ## Getting Started
 ### Prerequisites
 
-Before you proceed, ensure that you have Python 3.8 installed with these libraries:
+Before you proceed, ensure that you have Python 3.11 installed with these libraries:
 
 - adafruit-io
 - tensorflow
 - keras
-- Pillow
 - opencv-python
 - pyserial
 - pushbullet.py
