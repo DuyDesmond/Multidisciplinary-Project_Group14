@@ -133,7 +133,7 @@ while True:
         client.publish("moistsensor", moisture)
         time.sleep(1)
 
-    #Notification with PushBullet (Extra feature 1)
+    #Notification with PushBullet
     if PUSH_BULLET_TOGGLE:
         if(reservoir <= 0):
             pb.push_note("Water ran out, ", "Requesting refill", device=device)
@@ -151,7 +151,6 @@ while True:
             if (Sun_sensor_check == False or Rain_sensor_check == False or Moist_sensor_check == False or Temp_sensor_check == False):
                 pb.push_note("One or more of the sensors may not be functioning correctly", "Request checkup", device=device)
                 print("Detected System Anomaly, Locating Abnormal Sensor(s)...")
-                print("Abnormal sensor(s) include: ")
                 AbnormalSensorList = Sensor_Checkup(Sun_sensor_check, Rain_sensor_check, Moist_sensor_check, Temp_sensor_check)
                 for index in AbnormalSensorList: print("Abnormal sensor(s) include: " + ', '.join(AbnormalSensorList))
                 malfunctionNotified = True
