@@ -1,6 +1,6 @@
 ####Add-in format
 Name
-    Low temp
+    Low temp (Celsius Degree)
 	High temp
     Water (liter)
     Place
@@ -25,3 +25,129 @@ jasmine
 	30
 	1 
 	Full sun / Part shade
+rose
+	15
+	28
+	Full sun (Avg > 4 hr/day)
+
+aloe vera
+	18
+	30
+	1
+	Full sun (Avg 6-8 hr/day)
+
+asparagus 
+	15
+	24 
+	1
+	Partial shade (Avg 4-6 hr/day)
+
+basil 
+	18
+	24
+	1
+	Full sun (Avg 6-8 hr/day)
+
+begonia 
+	18
+	24
+	1
+	Partial shade (Avg 4-6 hr/day)
+
+bell pepper 
+	18
+	24
+	1
+	Full sun (Avg 6-8 hr/day)
+
+carrot 
+	15
+	21 
+	1
+	Partial shade (Avg 4-6 hr/day)
+
+celery  
+	15
+	24 
+	1
+	Partial shade (Avg 4-6 hr/day)
+
+chamomile
+	15
+	24
+	1
+	Partial shade (Avg 4-6 hr/day)
+
+chives 
+	15
+	24 
+	1
+	Partial shade (Avg 4-6 hr/day)
+
+cilantro 
+	15
+	24
+	1
+	Partial shade (Avg 4-6 hr/day)
+
+cucumber 
+	18
+	24 
+	1
+	Full sun (Avg 6-8 hr/day)
+
+fern 
+	18
+	24 
+	1
+	Partial shade (Avg 4-6 hr/day)
+
+ginger 	
+	21
+	32 
+	1
+	Full sun (Avg 6-8 hr/day)
+
+lettuce 
+	15
+	24 
+	1
+	Partial shade (Avg 4-6 hr/day)
+
+marigold 
+	18
+	24 
+	1
+	Full sun (Avg 6-8 hr/day)
+
+mint 
+	15
+	24
+	1
+	Partial shade (Avg 4-6 hr/day)
+
+onion 	
+	18
+	21
+	1
+	Partial shade (Avg 4-6 hr/day)
+
+orchid 
+	4
+	21
+	1
+	Partial shade (Avg 3-4 hr/day)
+
+
+
+cilantro
+	15
+	24 
+	1
+	Partial shade (Avg 4-6 hr/day)
+
+zinnia 
+	15
+	24 
+	1
+	Full sun (Avg 6-8 hr/day)
