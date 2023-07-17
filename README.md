@@ -3,7 +3,7 @@
 A smart plant watering system based on the AIoT Kit.  
 This is a project for the Multidisciplinary Project Lab.  
 
-## Key Features
+## Features
 
 - **Automatic Watering**: Watering is done automatically based on soil moisture.
 - **Plant Detection**: Watering is only done if a plant is detected at the plot.
@@ -12,7 +12,7 @@ This is a project for the Multidisciplinary Project Lab.
 - **(Optional) Notification**: Sends notification about various system event to your device.
 
 ## Getting Started
-### Prerequisites
+### Required Dependencies
 
 Before you proceed, ensure that you have Python 3.11 installed with these libraries:
 
@@ -31,23 +31,23 @@ A free account on [Adafruit IO](https://io.adafruit.com/) as well as the [AIoT K
 The pushbullet.py library is required to enable this feature as well as the Pushbullet application to be installed on your device in order to receive the notifications.  
 This feature can be disabled during setup.
 
-### Installation
-#### Connecting to the AIoT Kit
+## Deployment
+### Connect the AIoT Kit
 
 1. Connect the kit to the system via the USB cable.  
-2. Find the name of the port that the kit will be communicating through:
+2. Find the name of the port that the kit will be communicating through.
 
-##### On Windows:
+#### On Windows:
 
 Check for the port name in `Device Manager/Ports`.  
 The name should be in the form of `COM*`
 
-##### On Linux:
+#### On Linux:
 
 Check for any new USB adapter in the `/dev` directory.  
 You can find it through the terminal: `ls /dev/ttyUSB*`.
 
-#### Installation
+### Installation
 
 1. Clone the repository.
 2. Run `install.py` and follow the instruction.
@@ -56,8 +56,8 @@ You can find it through the terminal: `ls /dev/ttyUSB*`.
 ### Configuration
 
 A configuration file `config` should be generated after running `install.py`.  
-In case that `install.py` fail to create the config, you can manually create it like so:
-```
+In case that `install.py` fail to create the config, you can manually create it using the following template:
+```ini
 AIO_USERNAME=[Your Adafruit IO Username]
 AIO_KEY=[Your Adafruit IO Key]
 PORT=[The name of the port that the AIoT Kit is connected to]
