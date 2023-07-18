@@ -65,8 +65,21 @@ def requestData(command):
     return returnData[2]
 requestData("0")
 
-client = MQTTClient(AIO_USERNAME , AIO_KEY)
+#Setting default sensor status
+sensor_status = {
+    "Light Sensor" : 1,
+    "Moist Sensor": 1,
+    "Temperature Sensor": 1,
+    "Reservoir Sensor" : 1
+}
 
+#Detect which sensor has malfunctioned
+def Sensor_Checkup(SensorCheckList, notifyStatus):
+    for sensor, status in SensorCheckList.items(): 
+        if status == 0: print(sensor, " ")
+        notifyStatus = True 
+
+client = MQTTClient(AIO_USERNAME , AIO_KEY)
 client.on_connect = connected  #callback
 client.on_disconnect = disconnected
 client.on_message = message
@@ -75,26 +88,13 @@ client.on_subscribe = subscribe
 client.connect()
 client.loop_background()
 
-#Detect which sensor has malfunctioned
-def Sensor_Checkup(sun_sensor_check, rain_sensor_check, moist_sensor_check, temp_sensor_check):
-    sensor_list = []
-    if sun_sensor_check == False:
-        sensor_list.append("Sun sensor")
-    if rain_sensor_check == False:
-        sensor_list.append("Rain sensor")
-    if moist_sensor_check == False:
-        sensor_list.append("Moist sensor")
-    if temp_sensor_check == False:
-        sensor_list.append("Temp sensor")
-    return sensor_list
-
 reservoir = 100
+notBrokenNumber = 0
 malfunctionNotified = False
 is_daytime = True
 is_rainy = False
 
 while True:  
-    
     temp = requestData("0")
     sleep(2)
     hum = requestData("1")
@@ -107,24 +107,15 @@ while True:
     sleep(2)
 
     #Check if sensors work
-    #sun sensor
-    if light == "sensor error": 
-        Sun_sensor_check = True
-    else: Sun_sensor_check = False
+    if light == "sensor error": sensor_status["Light Sensor"] = 0
+    if temp == "sensor error": sensor_status["Temperature Sensor"] = 0
+    if moisture == "sensor error": sensor_status["Moist Sensor"] = 0
+    if reservoir == "sensor error": sensor_status["Reservoir Sensor"] = 0
 
-    #temperature sensor
-    if temp == "sensor error": 
-        Temp_sensor_check = True
-    else: Temp_sensor_check = False
-    #moisture sensor
-    if moisture == "sensor error": 
-        Moist_sensor_check = True
-    else: Moist_sensor_check = False
-
-    if reservoir == "sensor error": 
-        Reservoir_sensor_check = True
-    else: Temp_sensor_check = False
-
+    #Check number of broken sensors
+    for check in sensor_status.values(): 
+        if check == 1: notBrokenNumber += 1
+    if notBrokenNumber == 4: malfunctionNotified = False
 
     client.publish("lightsensor", light)
     sleep(2)
@@ -150,13 +141,10 @@ while True:
             pb.push_note("Nighttime mode", "Sunlight undetected, stop watering for the night", device=device)
 
         #Sensor malfunction notification
-        if not malfunctionNotified: 
-            if (Sun_sensor_check == False or Moist_sensor_check == False or Temp_sensor_check == False):
-                pb.push_note("One or more of the sensors may not be functioning correctly", "Request checkup", device=device)
-                print("Detected System Anomaly, Locating Abnormal Sensor(s)...")
-                AbnormalSensorList = Sensor_Checkup(Sun_sensor_check, Moist_sensor_check, Temp_sensor_check, Reservoir_sensor_check)
-                for index in AbnormalSensorList: print("Abnormal sensor(s) include: " + ', '.join(AbnormalSensorList))
-                malfunctionNotified = True
+        if (not malfunctionNotified) and (notBrokenNumber < 4) :
+            pb.push_note("One or more of the sensors may not be functioning correctly", "Request checkup", device=device)
+            print("Detected System Anomaly, Locating Abnormal Sensor(s)...")
+            Sensor_Checkup(sensor_status, malfunctionNotified)
 
-    #Pause for 12 seconds
+    #Pause time
     sleep(10)
