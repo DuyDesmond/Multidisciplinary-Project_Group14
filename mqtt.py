@@ -2,8 +2,9 @@ import time
 import random
 import sys
 from Adafruit_IO import MQTTClient
+import plant_type
 
-configFile = open("config")
+configFile = open("Multidisciplinary-Project_Group14\config")
 config = configFile.read().split("\n")
 
 AIO_USERNAME = config[0].strip().split("=")[-1]
@@ -31,6 +32,7 @@ def connected(client):
     client.subscribe("reservoir")
     client.subscribe("tempsensor")
     client.subscribe("schedule")
+    client.subscribe("comm")
     print("Server connected ...")
 
 def subscribe(client , userdata , mid , granted_qos):
@@ -120,22 +122,32 @@ while True:
 
     # Rain
     if rain == 1:
-        client.publish("tempsensor", temp-2)
+        temp -= 2
+        client.publish("tempsensor", temp)
         time.sleep(1)
+        if (temp < int(plant_type.lo_temp))or(temp > int (plant_type.hi_temp)):
+            client.publish("comm", "Not optimal temperature")
+        else:
+            client.publish("comm", "Working condition")
         client.publish("moistsensor", 100)
         time.sleep(1)
         client.publish("on-slash-off", 0)
         time.sleep(1)
         is_rainy = True
+
     # No rain
     else:
         client.publish("tempsensor", temp)
-        time.sleep(1)   
-        moisture = random.randint(50,99)
-        client.publish("on-slash-off", 1)
         time.sleep(1)
+        if (temp < int(plant_type.lo_temp))or(temp > int (plant_type.hi_temp)):
+            client.publish("comm", "Not optimal temperature")
+        else:
+            client.publish("comm", "Working condition")
+        moisture = random.randint(50,99)
         client.publish("moistsensor", moisture)
         time.sleep(1)
+        reservoir -= int(plant_type.water_v)
+        client.publish("wateramount", int(plant_type.water_v))          
 
     #Notification with PushBullet
     if PUSH_BULLET_TOGGLE:
