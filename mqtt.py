@@ -9,6 +9,18 @@ config = configFile.read().split("\n")
 
 AIO_USERNAME = config[0].strip().split("=")[-1]
 AIO_KEY = config[1].strip().split("=")[-1]
+PUSH_BULLET_TOGGLE = True if config[3].strip().split("=")[-1] == "true" else False
+
+if PUSH_BULLET_TOGGLE:
+    #Imports Pushbullet library if the user wishes to have notifications
+    from pushbullet import PushBullet 
+    DEVICE_ACCESS_TOKEN = config[4].strip().split("=")[-1]
+
+    #Create a PushBullet Instance with the access token
+    pb = PushBullet(DEVICE_ACCESS_TOKEN)
+
+    # Get the device you want to push to
+    device = pb.get_device(config[5].strip().split("=")[-1])
 
 configFile.close()
 
@@ -19,7 +31,6 @@ def connected(client):
     client.subscribe("rainsensor")
     client.subscribe("reservoir")
     client.subscribe("tempsensor")
-    client.subscribe("wateramount")
     client.subscribe("schedule")
     client.subscribe("comm")
     print("Server connected ...")
@@ -47,7 +58,23 @@ client.on_subscribe = subscribe
 client.connect()
 client.loop_background()
 
+#Detect which sensor has malfunctioned
+def Sensor_Checkup(sun_sensor_check, rain_sensor_check, moist_sensor_check, temp_sensor_check):
+    sensor_list = []
+    if sun_sensor_check == False:
+        sensor_list.append("Sun sensor")
+    if rain_sensor_check == False:
+        sensor_list.append("Rain sensor")
+    if moist_sensor_check == False:
+        sensor_list.append("Moist sensor")
+    if temp_sensor_check == False:
+        sensor_list.append("Temp sensor")
+    return sensor_list
+
 reservoir = 100
+malfunctionNotified = False
+is_daytime = True
+is_rainy = False
 
 while True:  
     # Reservoir amount
@@ -59,13 +86,39 @@ while True:
     client.publish("lightsensor", sun)
     client.publish("rainsensor", rain)
     time.sleep(3)
+
+    #Check if sensors work
     
+    #sun sensor
+    if (isinstance(sun, int)): 
+        Sun_sensor_check = True
+    else: Sun_sensor_check = False
+    
+    #rain sensor
+    if (isinstance(rain, int)): 
+        Rain_sensor_check = True
+    else: Rain_sensor_check = False
+
+
     # Daytime  
     if sun == 1:  
         temp = random.randint(30, 35)
     # Nighttime
     else:
         temp = random.randint(25,29)
+        is_daytime = False
+        #Should add a line to keep the pump from functioning here
+
+    #temperature sensor
+    if (isinstance(temp, int)): 
+        Temp_sensor_check = True
+    else: Temp_sensor_check = False
+
+    #When moisture data comes in
+    #moisture sensor
+    if (isinstance(moisture, int)): 
+        Moist_sensor_check = True
+    else: Moist_sensor_check = False
 
     # Rain
     if rain == 1:
@@ -78,8 +131,10 @@ while True:
             client.publish("comm", "Working condition")
         client.publish("moistsensor", 100)
         time.sleep(1)
-        client.publish("wateramount", 0)
+        client.publish("on-slash-off", 0)
         time.sleep(1)
+        is_rainy = True
+
     # No rain
     else:
         client.publish("tempsensor", temp)
@@ -93,6 +148,28 @@ while True:
         time.sleep(1)
         reservoir -= int(plant_type.water_v)
         client.publish("wateramount", int(plant_type.water_v))          
+
+    #Notification with PushBullet
+    if PUSH_BULLET_TOGGLE:
+        if(reservoir <= 0):
+            pb.push_note("Water ran out, ", "Requesting refill", device=device)
     
-    if reservoir <= 0: reservoir = 100
+        #Rain-detection notification 
+        if is_rainy:
+            pb.push_note("Rain detected", "Pump will stop functioning", device=device)
+    
+        #Nighttime turn off (It is recommended that smart watering systems turn off at night)
+        if not is_daytime:
+            pb.push_note("Nighttime mode", "Sunlight undetected, stop watering for the night", device=device)
+
+        #Sensor malfunction notification
+        if not malfunctionNotified: 
+            if (Sun_sensor_check == False or Rain_sensor_check == False or Moist_sensor_check == False or Temp_sensor_check == False):
+                pb.push_note("One or more of the sensors may not be functioning correctly", "Request checkup", device=device)
+                print("Detected System Anomaly, Locating Abnormal Sensor(s)...")
+                AbnormalSensorList = Sensor_Checkup(Sun_sensor_check, Rain_sensor_check, Moist_sensor_check, Temp_sensor_check)
+                for index in AbnormalSensorList: print("Abnormal sensor(s) include: " + ', '.join(AbnormalSensorList))
+                malfunctionNotified = True
+
+    #Pause for 12 seconds
     time.sleep(12)
