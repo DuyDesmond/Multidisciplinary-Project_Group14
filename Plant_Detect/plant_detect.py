@@ -16,8 +16,8 @@ class_names = open("labels.txt", "r").readlines()
 # determined by the first position in the shape tuple, in this case 1
 data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
 
-# Replace this with the path to your image
-image = Image.open("E:/MyUni/1st Year - Foundation Year/Year 1 - Sem 2 - Phase 4/Multidisciplinary Project/Group Work/Plant_Detect/plant_sample.jpg").convert("RGB")
+# Replace this with the path to your image, use "/" instead of "\"
+image = Image.open("").convert("RGB")
 
 # resizing the image to be at least 224x224 and then cropping from the center
 size = (224, 224)
