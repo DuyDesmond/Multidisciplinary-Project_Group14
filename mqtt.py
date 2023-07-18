@@ -1,10 +1,11 @@
-import time
+from time import sleep
 import random
 import sys
 from Adafruit_IO import MQTTClient
 import plant_type
+import sensor
 
-configFile = open("Multidisciplinary-Project_Group14\config")
+configFile = open("config")
 config = configFile.read().split("\n")
 
 AIO_USERNAME = config[0].strip().split("=")[-1]
@@ -28,10 +29,8 @@ def connected(client):
     client.subscribe("lightsensor")
     client.subscribe("moistsensor")
     client.subscribe("on-slash-off")
-    client.subscribe("rainsensor")
     client.subscribe("reservoir")
     client.subscribe("tempsensor")
-    client.subscribe("schedule")
     client.subscribe("comm")
     print("Server connected ...")
 
@@ -46,7 +45,25 @@ def message(client , feed_id , payload):
     print(f"Received payload from \"{feed_id}\": {payload}")
     if (feed_id == "schedule"):
         print(f"Manual timeout override: \"{payload}\"")
-        time.sleep(int(payload))
+        sleep(int(payload))
+    if (feed_id == "on-slash-off"):
+        if payload == "1":
+            print("Turning the pump on...")
+            sensor.sendCommand("2")
+            sleep(5)
+            sensor.sendCommand("3")
+            client.publish("on-slash-off", 0)
+            return
+        
+def requestData(command):
+    sensor.sendCommand(command)
+    sleep(2)
+    returnData = sensor.readSerial()
+    
+    if returnData == "": return "sensor error"
+ 
+    return returnData[2]
+requestData("0")
 
 client = MQTTClient(AIO_USERNAME , AIO_KEY)
 
@@ -77,86 +94,56 @@ is_daytime = True
 is_rainy = False
 
 while True:  
-    # Reservoir amount
-    client.publish("reservoir", reservoir)
-    time.sleep(2)
-    # Whether it's day or night/ raining or not.
-    sun = random.randint(0,1) # Day (5am - 7pm)/Night (7pm - 5am).
-    rain =random.randint(0,1) # Rain
-    client.publish("lightsensor", sun)
-    client.publish("rainsensor", rain)
-    time.sleep(3)
+    
+    temp = requestData("0")
+    sleep(2)
+    hum = requestData("1")
+    sleep(2)
+    reservoir = requestData("7")
+    sleep(2)
+    moisture = requestData("6")
+    sleep(2)
+    light = requestData("8")  
+    sleep(2)
 
     #Check if sensors work
-    
     #sun sensor
-    if (isinstance(sun, int)): 
+    if light == "sensor error": 
         Sun_sensor_check = True
     else: Sun_sensor_check = False
-    
-    #rain sensor
-    if (isinstance(rain, int)): 
-        Rain_sensor_check = True
-    else: Rain_sensor_check = False
-
-
-    # Daytime  
-    if sun == 1:  
-        temp = random.randint(30, 35)
-    # Nighttime
-    else:
-        temp = random.randint(25,29)
-        is_daytime = False
-        #Should add a line to keep the pump from functioning here
 
     #temperature sensor
-    if (isinstance(temp, int)): 
+    if temp == "sensor error": 
         Temp_sensor_check = True
     else: Temp_sensor_check = False
-
-    #When moisture data comes in
     #moisture sensor
-    if (isinstance(moisture, int)): 
+    if moisture == "sensor error": 
         Moist_sensor_check = True
     else: Moist_sensor_check = False
 
-    # Rain
-    if rain == 1:
-        temp -= 2
-        client.publish("tempsensor", temp)
-        time.sleep(1)
-        if (temp < int(plant_type.lo_temp))or(temp > int (plant_type.hi_temp)):
-            client.publish("comm", "Not optimal temperature")
-        else:
-            client.publish("comm", "Working condition")
-        client.publish("moistsensor", 100)
-        time.sleep(1)
-        client.publish("on-slash-off", 0)
-        time.sleep(1)
-        is_rainy = True
+    if reservoir == "sensor error": 
+        Reservoir_sensor_check = True
+    else: Temp_sensor_check = False
 
-    # No rain
-    else:
-        client.publish("tempsensor", temp)
-        time.sleep(1)
-        if (temp < int(plant_type.lo_temp))or(temp > int (plant_type.hi_temp)):
-            client.publish("comm", "Not optimal temperature")
-        else:
-            client.publish("comm", "Working condition")
-        moisture = random.randint(50,99)
-        client.publish("moistsensor", moisture)
-        time.sleep(1)
-        reservoir -= int(plant_type.water_v)
-        client.publish("wateramount", int(plant_type.water_v))          
 
+    client.publish("lightsensor", light)
+    sleep(2)
+    client.publish("tempsensor", temp)
+    sleep(2)
+    client.publish("moistsensor", moisture)
+    sleep(2)
+    client.publish("reservoir", (36.5-float(reservoir))/36.5 if reservoir != "sensor error" else reservoir)
+    sleep(2)
+    client.publish("humidity", hum)
+    sleep(2)
+    
+    if float(moisture) <= 60:
+        client.publish("on-slash-off", 1)
+      
     #Notification with PushBullet
     if PUSH_BULLET_TOGGLE:
         if(reservoir <= 0):
             pb.push_note("Water ran out, ", "Requesting refill", device=device)
-    
-        #Rain-detection notification 
-        if is_rainy:
-            pb.push_note("Rain detected", "Pump will stop functioning", device=device)
     
         #Nighttime turn off (It is recommended that smart watering systems turn off at night)
         if not is_daytime:
@@ -164,12 +151,12 @@ while True:
 
         #Sensor malfunction notification
         if not malfunctionNotified: 
-            if (Sun_sensor_check == False or Rain_sensor_check == False or Moist_sensor_check == False or Temp_sensor_check == False):
+            if (Sun_sensor_check == False or Moist_sensor_check == False or Temp_sensor_check == False):
                 pb.push_note("One or more of the sensors may not be functioning correctly", "Request checkup", device=device)
                 print("Detected System Anomaly, Locating Abnormal Sensor(s)...")
-                AbnormalSensorList = Sensor_Checkup(Sun_sensor_check, Rain_sensor_check, Moist_sensor_check, Temp_sensor_check)
+                AbnormalSensorList = Sensor_Checkup(Sun_sensor_check, Moist_sensor_check, Temp_sensor_check, Reservoir_sensor_check)
                 for index in AbnormalSensorList: print("Abnormal sensor(s) include: " + ', '.join(AbnormalSensorList))
                 malfunctionNotified = True
 
     #Pause for 12 seconds
-    time.sleep(12)
+    sleep(10)

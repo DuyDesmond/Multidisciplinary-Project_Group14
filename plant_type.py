@@ -1,5 +1,5 @@
 import time
-plantdb = open("Multidisciplinary-Project_Group14\Plant_data")
+plantdb = open("Plant_data")
 pdb = plantdb.read().split("\n")
 #User type in their plant type
 inp = input("Please enter your type of plant: ").strip()
