@@ -65,19 +65,10 @@ def requestData(command):
     return returnData[2]
 requestData("0")
 
-#Setting default sensor status
-sensor_status = {
-    "Light Sensor" : 1,
-    "Moist Sensor": 1,
-    "Temperature Sensor": 1,
-    "Reservoir Sensor" : 1
-}
-
 #Detect which sensor has malfunctioned
-def Sensor_Checkup(SensorCheckList, notifyStatus):
+def sensorCheckup(SensorCheckList):
     for sensor, status in SensorCheckList.items(): 
         if status == 0: print(sensor, " ")
-        notifyStatus = True 
 
 client = MQTTClient(AIO_USERNAME , AIO_KEY)
 client.on_connect = connected  #callback
@@ -88,47 +79,57 @@ client.on_subscribe = subscribe
 client.connect()
 client.loop_background()
 
-reservoir = 100
-notBrokenNumber = 0
+#Setting default sensor status
+sensorStatus = {
+    "Light Sensor" : 1,
+    "Humidity Sensor": 1,
+    "Moisture Sensor": 1,
+    "Temperature Sensor": 1,
+    "Reservoir Sensor" : 1
+}
+
+sensorValues = {
+    "lightsensor": 0,
+    "tempsensor": 0,
+    "moistsensor": 0,
+    "reservoir": 0,
+    "humidity": 0
+}
+
+dataRequestQueue = ["8", "0", "6", "7", "1"]
+
+malfunctionDetected = False
 malfunctionNotified = False
-is_daytime = True
-is_rainy = False
+isDaytime = True
+isRainy = False
 
-while True:  
-    temp = requestData("0")
-    sleep(2)
-    hum = requestData("1")
-    sleep(2)
-    reservoir = requestData("7")
-    sleep(2)
-    moisture = requestData("6")
-    sleep(2)
-    light = requestData("8")  
-    sleep(2)
+while True:
+    index = 0
 
-    #Check if sensors work
-    if light == "sensor error": sensor_status["Light Sensor"] = 0
-    if temp == "sensor error": sensor_status["Temperature Sensor"] = 0
-    if moisture == "sensor error": sensor_status["Moist Sensor"] = 0
-    if reservoir == "sensor error": sensor_status["Reservoir Sensor"] = 0
+    for sensorName in sensorValues.keys():
+        sensorValues[sensorName] = requestData[dataRequestQueue[index]]
 
-    #Check number of broken sensors
-    for check in sensor_status.values(): 
-        if check == 1: notBrokenNumber += 1
-    if notBrokenNumber == 4: malfunctionNotified = False
+        #Check if sensors work
+        if sensorValues[sensorName] == "sensor error":
+            malfunctionDetected = True
+            sensorStatus[list(sensorStatus.keys())[index]] = 0
+            index += 1
+            sleep(2)
+            continue
 
-    client.publish("lightsensor", light)
-    sleep(2)
-    client.publish("tempsensor", temp)
-    sleep(2)
-    client.publish("moistsensor", moisture)
-    sleep(2)
-    client.publish("reservoir", (36.5-float(reservoir))/36.5 if reservoir != "sensor error" else reservoir)
-    sleep(2)
-    client.publish("humidity", hum)
-    sleep(2)
+        sensorValues[sensorName] = float(sensorValues[sensorName])
+        index += 1
+        sleep(2)
+
+    #Calculate reservoir value if it is working
+    if sensorValues["reservoir"] != "sensor error":
+        sensorValues["reservoir"] = (36.5-reservoir)/36.5
+
+    for sensorName, value in sensorValues.items():
+        client.publish(sensorName, value)
+        sleep(2)
     
-    if float(moisture) <= 60:
+    if moisture <= 60:
         client.publish("on-slash-off", 1)
       
     #Notification with PushBullet
@@ -137,14 +138,16 @@ while True:
             pb.push_note("Water ran out, ", "Requesting refill", device=device)
     
         #Nighttime turn off (It is recommended that smart watering systems turn off at night)
-        if not is_daytime:
+        if not isDaytime:
             pb.push_note("Nighttime mode", "Sunlight undetected, stop watering for the night", device=device)
 
         #Sensor malfunction notification
-        if (not malfunctionNotified) and (notBrokenNumber < 4) :
+        if (not malfunctionNotified) and (malfunctionDetected) :
             pb.push_note("One or more of the sensors may not be functioning correctly", "Request checkup", device=device)
             print("Detected System Anomaly, Locating Abnormal Sensor(s)...")
-            Sensor_Checkup(sensor_status, malfunctionNotified)
+
+            sensorCheckup(sensorStatus)
+            malfunctionNotified = True
 
     #Pause time
     sleep(10)
