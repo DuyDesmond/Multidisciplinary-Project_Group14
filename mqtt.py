@@ -123,18 +123,18 @@ while True:
 
     #Calculate reservoir value if it is working
     if sensorValues["reservoir"] != "sensor error":
-        sensorValues["reservoir"] = (36.5-reservoir)/36.5
+        sensorValues["reservoir"] = (36.5-sensorValues["reservoir"])/36.5
 
     for sensorName, value in sensorValues.items():
         client.publish(sensorName, value)
         sleep(2)
     
-    if moisture <= 60:
+    if sensorValues["moistsensor"] <= 60:
         client.publish("on-slash-off", 1)
       
     #Notification with PushBullet
     if PUSH_BULLET_TOGGLE:
-        if(reservoir <= 0):
+        if(sensorValues["reservoir"] <= 0):
             pb.push_note("Water ran out, ", "Requesting refill", device=device)
     
         #Nighttime turn off (It is recommended that smart watering systems turn off at night)
