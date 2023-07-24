@@ -63,6 +63,7 @@ def requestData(command):
     if returnData == "": return "sensor error"
  
     return returnData[2]
+
 requestData("0")
 
 #Detect which sensor has malfunctioned
@@ -101,6 +102,10 @@ dataRequestQueue = ["8", "0", "6", "7", "1"]
 malfunctionDetected = False
 malfunctionNotified = False
 isDaytime = True
+
+#Personally I don't think it's possible to figure out if it is raining.
+#Moisture doesn't correlate well.
+#We could use a local forecast fetch from a forecaster, but it's gonna be more work!
 isRainy = False
 
 while True:
@@ -122,14 +127,22 @@ while True:
         sleep(2)
 
     #Calculate reservoir value if it is working
-    if sensorValues["reservoir"] != "sensor error":
+    if sensorStatus["Reservoir Sensor"] != 0:
         sensorValues["reservoir"] = (36.5-sensorValues["reservoir"])/36.5
+
+    #Arbitrary value for if it is daytime or not, could be changed
+    #Putting this here since iirc day/night status is published
+    if sensorStatus["Light Sensor"] != 0:
+        isDaytime = sensorValues["lightsensor"] > 60
 
     for sensorName, value in sensorValues.items():
         client.publish(sensorName, value)
         sleep(2)
-    
-    if sensorValues["moistsensor"] <= 60:
+
+    #Reservoir threshold could be changed based on the watering preset
+    #Same goes for watering duration?
+    #When AI is merged, we can add another condition that the plant is recognized
+    if sensorValues["moistsensor"] <= 60 and isDaytime and sensorValues["reservoir"] >= 10:
         client.publish("on-slash-off", 1)
       
     #Notification with PushBullet
@@ -142,7 +155,7 @@ while True:
             pb.push_note("Nighttime mode", "Sunlight undetected, stop watering for the night", device=device)
 
         #Sensor malfunction notification
-        if (not malfunctionNotified) and (malfunctionDetected) :
+        if (not malfunctionNotified) and malfunctionDetected :
             pb.push_note("One or more of the sensors may not be functioning correctly", "Request checkup", device=device)
             print("Detected System Anomaly, Locating Abnormal Sensor(s)...")
 
