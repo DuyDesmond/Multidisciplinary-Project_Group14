@@ -106,7 +106,12 @@ isDaytime = True
 #Personally I don't think it's possible to figure out if it is raining.
 #Moisture doesn't correlate well.
 #We could use a local forecast fetch from a forecaster, but it's gonna be more work!
-isRainy = False
+
+#-> Yea... about that... I integrated a Weather API in plant_type.py :)
+if plant_type.current_weather=="Rain":
+    isRainy = True
+else:
+    isRainy = False
 
 while True:
     index = 0
