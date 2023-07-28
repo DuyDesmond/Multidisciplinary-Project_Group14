@@ -50,7 +50,7 @@ def message(client , feed_id , payload):
         if payload == "1":
             print("Turning the pump on...")
             sensor.sendCommand("2")
-            sleep(5)
+            sleep(3*water_v)
             sensor.sendCommand("3")
             client.publish("on-slash-off", 0)
             return
@@ -109,7 +109,7 @@ while True:
     index = 0
 
     for sensorName in sensorValues.keys():
-        sensorValues[sensorName] = requestData[dataRequestQueue[index]]
+        sensorValues[sensorName] = requestData(dataRequestQueue[index])
 
         #Check if sensors work
         if sensorValues[sensorName] == "sensor error":
@@ -135,11 +135,17 @@ while True:
     for sensorName, value in sensorValues.items():
         client.publish(sensorName, value)
         sleep(2)
+    
+    #Using data from plant_type.py
+    if sensorStatus["Temperature Sensor"] != 0:
+        if sensorValue["tempsensor"] > hi_temp:
+            print("Temperature is too high!")
+        
+        if sensorValues["tempsensor"] < lo_temp:
+            print("Temperature is too low!")
 
-    #Reservoir threshold could be changed based on the watering preset
-    #Same goes for watering duration?
-    #When AI is merged, we can add another condition that the plant is recognized
-    if sensorValues["moistsensor"] <= 60 and isDaytime and sensorValues["reservoir"] >= 10:
+    #Pump water when conditions are met: soil moisture < 40%, it is daytime and reservoir having somewhat enough water
+    if sensorValues["moistsensor"] <= 40 and isDaytime and sensorValues["reservoir"] >= 15:
         client.publish("on-slash-off", 1)
       
     #Notification with PushBullet
