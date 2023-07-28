@@ -117,9 +117,6 @@ if enablePushBullet == True:
     print()    
     selectedPBDevice = pb.devices[int(input(f"Please enter the index of the device you want the notifications to be sent to (0 - {len(devices)-1}): "))].nickname
 
-openweather_key = input("Please enter your Open Weather API key: ")
-city = input("Please enter your current city/location: ")
-
 try:
     settingFile = open("config", "w")
 except:
@@ -132,8 +129,6 @@ except:
     print("ENABLE_PUSH_BULLET=[true/false]")
     print("PUSH_BULLET_TOKEN=[your Pushbullet token]")
     print("PUSH_BULLET_DEVICE=[the nickname of the device you want Pushbullet notification to be sent to]")
-    print("OPENWEATHERMAP_API_KEY=[your OpeWeatherMap API key]")
-    print("CITY=[Your current city/location]")
     print()
     print("Exiting...")
     sys.exit()
@@ -150,9 +145,6 @@ else:
     settingFile.write(f"ENABLE_PUSH_BULLET=false\n")
     settingFile.write(f"PUSH_BULLET_TOKEN=\n")
     settingFile.write(f"PUSH_BULLET_DEVICE=\n")
-
-settingFile.write(f"OPENWEATHERMAP_API_KEY={openweather_key}\n")
-settingFile.write(f"CITY={city}\n")
 
 settingFile.close()
 

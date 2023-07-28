@@ -103,15 +103,7 @@ malfunctionDetected = False
 malfunctionNotified = False
 isDaytime = True
 
-#Personally I don't think it's possible to figure out if it is raining.
-#Moisture doesn't correlate well.
-#We could use a local forecast fetch from a forecaster, but it's gonna be more work!
-
-#-> Yea... about that... I integrated a Weather API in plant_type.py :)
-if plant_type.current_weather=="Rain":
-    isRainy = True
-else:
-    isRainy = False
+#I removed the raining sensor (Afihu)
 
 while True:
     index = 0
