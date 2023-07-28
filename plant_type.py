@@ -10,27 +10,28 @@ i = 1
 #Check for plant type in database
 for index in range(8,len(pdb)):
     if pdb[index] == inp:
-        time.sleep(1)
         name = inp
+        i = 0
 
         print(f"For {name}, we suggest the following:")
+        time.sleep(1)
+        
         lo_temp = pdb[index+1].strip()
         hi_temp = pdb[index+2].strip()
-        time.sleep(1)
-
         print(f"Temperature: {lo_temp}-{hi_temp} °C")
+        time.sleep(1)
+        
         water_v = pdb[index+3].strip()
-        time.sleep(1)
-
+        duration = pdb[index]
         print(f"Waterring volume per day: {water_v} Liter")
-        position = pdb[index+4].strip()
         time.sleep(1)
 
+        position = pdb[index+5].strip()
         print(f"Plant is best placed: {position}")
         time.sleep(1)
 
         print(f"Setting up systems for plant type: {name}...")
-        i = 0
+        
 
         break
 
