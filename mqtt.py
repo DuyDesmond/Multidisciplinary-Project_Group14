@@ -104,7 +104,7 @@ dataRequestQueue = ["8", "0", "6", "7", "1"]
 malfunctionDetected = False
 malfunctionNotified = False
 isDaytime = True
-plantDetected = detectPlant()
+plantDetected = False
 
 while True:
     index = 0
@@ -129,7 +129,7 @@ while True:
         sensorValues["reservoir"] = (36.5-sensorValues["reservoir"])/36.5
 
     #publish plant detection status to feed
-    detectPlant()
+    plantDetected = detectPlant()
     client.publish("plant_detector", plantDetected)
     sleep(1)
     
