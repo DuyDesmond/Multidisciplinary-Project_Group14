@@ -1,0 +1,128 @@
+####Add-in format
+Name
+    Low temp (Celsius Degree)
+	High temp
+    Approx water amount (liter)/pump run 
+	Pump working duration(second)/run # 
+    Sun exposure
+################
+tomato
+	21
+	24
+	1 
+	Full sun 
+carrot
+	10
+	27
+	3 
+	Full sun 
+lemon
+	24
+	30
+	2 
+	Full sun 
+jasmine
+	20
+	30
+	1 
+	Partial shade
+rose
+	15
+	28
+	1
+	Full sun 
+aloe vera
+	18
+	30
+	1
+	Full sun
+asparagus 
+	15
+	24 
+	1
+	Partial shade
+basil 
+	18
+	24
+	1
+	Full sun 
+begonia 
+	18
+	24
+	1
+	Partial shade 
+bell pepper 
+	18
+	24
+	1
+	Full sun 
+celery  
+	15
+	24 
+	1
+	Partial shade 
+chamomile
+	15
+	24
+	1
+	Partial shade 
+chives 
+	15
+	24 
+	1
+	Partial shade 
+cilantro 
+	15
+	24
+	1
+	Partial shade
+cucumber 
+	18
+	24 
+	1
+	Full sun
+fern 
+	18
+	24 
+	1
+	Partial shade
+ginger 	
+	21
+	32 
+	1
+	Full sun
+lettuce 
+	15
+	24 
+	1
+	Partial shade
+marigold 
+	18
+	24 
+	1
+	Full sun 
+mint 
+	15
+	24
+	1
+	Partial shade
+onion 	
+	18
+	21
+	1
+	Partial shade
+orchid 
+	4
+	21
+	1
+	Partial shade
+cilantro
+	15
+	24 
+	1
+	Partial shade
+zinnia 
+	15
+	24 
+	1
+	Full sun

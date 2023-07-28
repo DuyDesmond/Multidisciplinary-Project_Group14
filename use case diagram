@@ -1,0 +1,14 @@
+user 	--> setup system
+						 	<--include-- 	input ADAfruit IO Key/Username
+							<--include-- 	Perfrom system check 	<--include-- 	input USB port number
+						  	<--include-- 	input Pushbullet Key/Device
+							<--include-- 	settings based on plant type	<--include-- 	Input plant type
+	
+		--> Manual override	---->		Turn on pump
+
+system	--> 	Notify lower water		<--include-- 	reservoir input
+	
+		--> 	Notify not optimal temp/light/humidity	<--include-- 	sensor input  
+	
+		--> 	Turn on pump	<--include--	sensor input (soil moisture)
+								<--include--	setting based on plant tupe	

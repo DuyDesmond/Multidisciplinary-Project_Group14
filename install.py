@@ -124,7 +124,7 @@ except:
     print("Alternatively, you can open the 'config' file with these:")
     print()
     print("AIO_USERNAME=[your Adafruit IO username]")
-    print("AIO_KEY=Your Adafruit IO Key")
+    print("AIO_KEY=[Your Adafruit IO Key]")
     print("PORT=[Name of the port that the AIoT Kit is connected to]")
     print("ENABLE_PUSH_BULLET=[true/false]")
     print("PUSH_BULLET_TOKEN=[your Pushbullet token]")
