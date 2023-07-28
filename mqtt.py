@@ -52,7 +52,7 @@ def message(client , feed_id , payload):
         if payload == "1":
             print("Turning the pump on...")
             sensor.sendCommand("2")
-            sleep(3*water_v)
+            sleep(plant_type.duration)
             sensor.sendCommand("3")
             client.publish("on-slash-off", 0)
             return
@@ -144,10 +144,10 @@ while True:
     
     #Using data from plant_type.py
     if sensorStatus["Temperature Sensor"] != 0:
-        if sensorValue["tempsensor"] > hi_temp:
+        if sensorValues["tempsensor"] > plant_type.hi_temp:
             print("Temperature is too high!")
         
-        if sensorValues["tempsensor"] < lo_temp:
+        if sensorValues["tempsensor"] < plant_type.lo_temp:
             print("Temperature is too low!")
 
     #Pump water when conditions are met: soil moisture < 40%, it is daytime, there is a plant and reservoir having somewhat enough water
