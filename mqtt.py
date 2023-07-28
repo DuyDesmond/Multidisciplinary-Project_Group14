@@ -4,6 +4,7 @@ import sys
 from Adafruit_IO import MQTTClient
 import plant_type
 import sensor
+from plant_detector import detectPlant
 
 configFile = open("config")
 config = configFile.read().split("\n")
@@ -102,8 +103,7 @@ dataRequestQueue = ["8", "0", "6", "7", "1"]
 malfunctionDetected = False
 malfunctionNotified = False
 isDaytime = True
-
-#I removed the raining sensor (Afihu)
+plantDetected = False
 
 while True:
     index = 0
@@ -127,6 +127,8 @@ while True:
     if sensorStatus["Reservoir Sensor"] != 0:
         sensorValues["reservoir"] = (36.5-sensorValues["reservoir"])/36.5
 
+    plantDetected = detectPlant()
+
     #Arbitrary value for if it is daytime or not, could be changed
     #Putting this here since iirc day/night status is published
     if sensorStatus["Light Sensor"] != 0:
@@ -144,8 +146,8 @@ while True:
         if sensorValues["tempsensor"] < lo_temp:
             print("Temperature is too low!")
 
-    #Pump water when conditions are met: soil moisture < 40%, it is daytime and reservoir having somewhat enough water
-    if sensorValues["moistsensor"] <= 40 and isDaytime and sensorValues["reservoir"] >= 15:
+    #Pump water when conditions are met: soil moisture < 40%, it is daytime, there is a plant and reservoir having somewhat enough water
+    if sensorValues["moistsensor"] <= 40 and isDaytime and sensorValues["reservoir"] >= 15 and plantDetected:
         client.publish("on-slash-off", 1)
       
     #Notification with PushBullet
