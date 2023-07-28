@@ -2,125 +2,127 @@
 Name
     Low temp (Celsius Degree)
 	High temp
-    Water (liter)
-    Place
+    Approx water amount (liter)/pump run 
+	Pump working duration(second)/run # 
+    Sun exposure
 ################
 tomato
 	21
 	24
 	1 
-	Full sun (Avg >= 8 hr/day)
+	Full sun 
 carrot
 	10
 	27
 	3 
-	Full sun (Avg 6-10 hr/day)
+	Full sun 
 lemon
 	24
 	30
 	2 
-	Full sun (Avg 6-8 hr/day)
+	Full sun 
 jasmine
 	20
 	30
 	1 
-	Full sun / Part shade
+	Partial shade
 rose
 	15
 	28
-	Full sun (Avg > 4 hr/day)
+	1
+	Full sun 
 aloe vera
 	18
 	30
 	1
-	Full sun (Avg 6-8 hr/day)
+	Full sun
 asparagus 
 	15
 	24 
 	1
-	Partial shade (Avg 4-6 hr/day)
+	Partial shade
 basil 
 	18
 	24
 	1
-	Full sun (Avg 6-8 hr/day)
+	Full sun 
 begonia 
 	18
 	24
 	1
-	Partial shade (Avg 4-6 hr/day)
+	Partial shade 
 bell pepper 
 	18
 	24
 	1
-	Full sun (Avg 6-8 hr/day)
+	Full sun 
 celery  
 	15
 	24 
 	1
-	Partial shade (Avg 4-6 hr/day)
+	Partial shade 
 chamomile
 	15
 	24
 	1
-	Partial shade (Avg 4-6 hr/day)
+	Partial shade 
 chives 
 	15
 	24 
 	1
-	Partial shade (Avg 4-6 hr/day)
+	Partial shade 
 cilantro 
 	15
 	24
 	1
-	Partial shade (Avg 4-6 hr/day)
+	Partial shade
 cucumber 
 	18
 	24 
 	1
-	Full sun (Avg 6-8 hr/day)
+	Full sun
 fern 
 	18
 	24 
 	1
-	Partial shade (Avg 4-6 hr/day)
+	Partial shade
 ginger 	
 	21
 	32 
 	1
-	Full sun (Avg 6-8 hr/day)
+	Full sun
 lettuce 
 	15
 	24 
 	1
-	Partial shade (Avg 4-6 hr/day)
+	Partial shade
 marigold 
 	18
 	24 
 	1
-	Full sun (Avg 6-8 hr/day)
+	Full sun 
 mint 
 	15
 	24
 	1
-	Partial shade (Avg 4-6 hr/day)
+	Partial shade
 onion 	
 	18
 	21
 	1
-	Partial shade (Avg 4-6 hr/day)
+	Partial shade
 orchid 
 	4
 	21
 	1
-	Partial shade (Avg 3-4 hr/day)
+	Partial shade
 cilantro
 	15
 	24 
 	1
-	Partial shade (Avg 4-6 hr/day)
+	Partial shade
 zinnia 
 	15
 	24 
 	1
-	Full sun (Avg 6-8 hr/day)
+	Full sun
