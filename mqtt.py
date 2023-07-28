@@ -149,12 +149,18 @@ while True:
     #Pump water when conditions are met: soil moisture < 40%, it is daytime, there is a plant and reservoir having somewhat enough water
     if sensorValues["moistsensor"] <= 40 and isDaytime and sensorValues["reservoir"] >= 15 and plantDetected:
         client.publish("on-slash-off", 1)
+    #If no plant is detected, then stops the system
+    else:
+        client.publish("on-slash-off", 0)
       
     #Notification with PushBullet
     if PUSH_BULLET_TOGGLE:
+        if not plantDetected:
+            pb.push_note("No plant detected", "The system has stopped", device=device)   
+                 
         if(sensorValues["reservoir"] <= 0):
             pb.push_note("Water ran out, ", "Requesting refill", device=device)
-    
+        
         #Nighttime turn off (It is recommended that smart watering systems turn off at night)
         if not isDaytime:
             pb.push_note("Nighttime mode", "Sunlight undetected, stop watering for the night", device=device)
