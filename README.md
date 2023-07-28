@@ -1,10 +1,11 @@
-# Multidisciplinary Project - Watering System
+# Multidisciplinary Project - <br/>Plant Monitoring and Watering System
 
-A smart plant watering system based on the AIoT Kit.  
+A smart plant monitoring and watering system based on the AIoT Kit.  
 This is a project for the Multidisciplinary Project Lab.  
 
 ## Features
 
+- **Plant Monitoring**: Monitor basic infomations about the environment around the plant.
 - **Automatic Watering**: Watering is done automatically based on soil moisture.
 - **Plant Detection**: Watering is only done if a plant is detected at the plot.
 - **Plant Presets**: Pre-made watering preset as well as other suggestion based on the plant type.
@@ -46,12 +47,15 @@ The name should be in the form of `COM*`
 
 Check for any new USB adapter in the `/dev` directory.  
 You can find it through the terminal: `ls /dev/ttyUSB*`.
+The name should be in the form of `/dev/ttyUSB*`
 
 ### Installation
 
 1. Clone the repository.
-2. Run `install.py` and follow the instruction.
-3. Run `mqtt.py` to start the client.
+2. Install the dependencies: `pip install -r requirement.txt`
+    1. Install optional dependencies: `pip install -r optionalReq.txt`
+3. Run `install.py` and follow the instruction.
+4. Run `mqtt.py` to start the client.
 
 ### Configuration
 
