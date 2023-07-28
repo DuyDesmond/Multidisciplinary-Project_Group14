@@ -33,6 +33,7 @@ def connected(client):
     client.subscribe("reservoir")
     client.subscribe("tempsensor")
     client.subscribe("comm")
+    client.subscribe("plant_dectector")
     print("Server connected ...")
 
 def subscribe(client , userdata , mid , granted_qos):
@@ -103,7 +104,7 @@ dataRequestQueue = ["8", "0", "6", "7", "1"]
 malfunctionDetected = False
 malfunctionNotified = False
 isDaytime = True
-plantDetected = False
+plantDetected = detectPlant()
 
 while True:
     index = 0
@@ -127,8 +128,11 @@ while True:
     if sensorStatus["Reservoir Sensor"] != 0:
         sensorValues["reservoir"] = (36.5-sensorValues["reservoir"])/36.5
 
-    plantDetected = detectPlant()
-
+    #publish plant detection status to feed
+    detectPlant()
+    client.publish("plant_detector", plantDetected)
+    sleep(1)
+    
     #Arbitrary value for if it is daytime or not, could be changed
     #Putting this here since iirc day/night status is published
     if sensorStatus["Light Sensor"] != 0:
