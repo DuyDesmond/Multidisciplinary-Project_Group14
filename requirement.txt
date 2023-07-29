@@ -1,0 +1,5 @@
+adafruit-io
+tensorflow
+keras
+opencv-python
+pyserial
