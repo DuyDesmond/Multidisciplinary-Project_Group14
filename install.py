@@ -148,7 +148,7 @@ else:
     settingFile.write(f"PUSH_BULLET_TOKEN=\n")
     settingFile.write(f"PUSH_BULLET_DEVICE=\n")
 
-settingFile.write(f"PLANT TYPE={plant_name}\n")
+settingFile.write(f"PLANT_TYPE={plant_name}\n")
 
 settingFile.close()
 

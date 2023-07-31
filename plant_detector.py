@@ -28,8 +28,9 @@ def detectPlant():
     class_name = class_names[index]
     confidence_score = prediction[0][index]
     
-    return True if class_name[2:] == "Plant" and np.round(confidence_score * 100)[:-2] > 60 else False
-
     print("Class:", class_name[2:], end="")
-    print("Confidence Score:", str(np.round(confidence_score * 100))[:-2], "%")
+    print("Confidence Score:", str(np.round(confidence_score * 100))[:-2], "%")   
+     
+    return True if (class_name[2:].strip() == "Plant") and ((confidence_score * 100) > 0.60) else False
+
     

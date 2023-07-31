@@ -9,6 +9,7 @@ configFile.close()
 
 plantdb = open("Plant_data")
 pdb = plantdb.read().split("\n")
+i=1
 
 #Check for plant type in database
 for index in range(8,len(pdb)):
@@ -18,13 +19,13 @@ for index in range(8,len(pdb)):
         print(f"For {plant_name}, we suggest the following:")
         time.sleep(1)
         
-        lo_temp = pdb[index+1].strip()
-        hi_temp = pdb[index+2].strip()
+        lo_temp = float(pdb[index+1].strip())
+        hi_temp = float(pdb[index+2].strip())
         print(f"Temperature: {lo_temp}-{hi_temp} °C")
         time.sleep(1)
         
         water_v = pdb[index+3].strip()
-        duration = pdb[index+4].strip()
+        duration = float(pdb[index+4].strip())
         print(f"Waterring volume per day: {water_v} Liter")
         time.sleep(1)
 

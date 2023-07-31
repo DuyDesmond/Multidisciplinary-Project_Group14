@@ -3,7 +3,7 @@ import random
 import sys
 from Adafruit_IO import MQTTClient
 from plant_type import hi_temp,lo_temp,duration
-from dummysensor import sendCommand, readSerial
+from sensor import sendCommand, readSerial
 from plant_detector import detectPlant
 
 configFile = open("config")
@@ -131,6 +131,7 @@ while True:
     #publish plant detection status to feed
     plantDetected = detectPlant()
     client.publish("plant_detector", plantDetected)
+    # client.publish("plant_detector", plantDetected)
     sleep(1)
     
     #Arbitrary value for if it is daytime or not, could be changed
