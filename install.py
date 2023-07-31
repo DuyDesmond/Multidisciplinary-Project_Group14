@@ -117,6 +117,8 @@ if enablePushBullet == True:
     print()    
     selectedPBDevice = pb.devices[int(input(f"Please enter the index of the device you want the notifications to be sent to (0 - {len(devices)-1}): "))].nickname
 
+plant_name=input('Please input your plant type: ')
+
 try:
     settingFile = open("config", "w")
 except:
@@ -145,6 +147,8 @@ else:
     settingFile.write(f"ENABLE_PUSH_BULLET=false\n")
     settingFile.write(f"PUSH_BULLET_TOKEN=\n")
     settingFile.write(f"PUSH_BULLET_DEVICE=\n")
+
+settingFile.write(f"PLANT TYPE={plant_name}\n")
 
 settingFile.close()
 

@@ -1,19 +1,21 @@
 import time
 
+configFile = open("config")
+
+config = configFile.read().split("\n")
+plant_name = config[6].strip().split("=")[-1]
+
+configFile.close()
+
 plantdb = open("Plant_data")
 pdb = plantdb.read().split("\n")
 
-#User type in their plant type
-inp = input("Please enter your type of plant: ").strip()
-i = 1
-
 #Check for plant type in database
 for index in range(8,len(pdb)):
-    if pdb[index] == inp:
-        name = inp
+    if pdb[index] == plant_name:
         i = 0
 
-        print(f"For {name}, we suggest the following:")
+        print(f"For {plant_name}, we suggest the following:")
         time.sleep(1)
         
         lo_temp = pdb[index+1].strip()
@@ -22,7 +24,7 @@ for index in range(8,len(pdb)):
         time.sleep(1)
         
         water_v = pdb[index+3].strip()
-        duration = pdb[index]
+        duration = pdb[index+4].strip()
         print(f"Waterring volume per day: {water_v} Liter")
         time.sleep(1)
 
@@ -30,7 +32,7 @@ for index in range(8,len(pdb)):
         print(f"Plant is best placed: {position}")
         time.sleep(1)
 
-        print(f"Setting up systems for plant type: {name}...")
+        print(f"Setting up systems for plant type: {plant_name}...")
         
 
         break

@@ -2,8 +2,8 @@ from time import sleep
 import random
 import sys
 from Adafruit_IO import MQTTClient
-import plant_type
-import sensor
+from plant_type import hi_temp,lo_temp,duration
+from dummysensor import sendCommand, readSerial
 from plant_detector import detectPlant
 
 configFile = open("config")
@@ -51,16 +51,16 @@ def message(client , feed_id , payload):
     if (feed_id == "on-slash-off"):
         if payload == "1":
             print("Turning the pump on...")
-            sensor.sendCommand("2")
-            sleep(plant_type.duration)
-            sensor.sendCommand("3")
+            sendCommand("2")
+            sleep(3*duration)
+            sendCommand("3")
             client.publish("on-slash-off", 0)
             return
         
 def requestData(command):
-    sensor.sendCommand(command)
+    sendCommand(command)
     sleep(2)
-    returnData = sensor.readSerial()
+    returnData = readSerial()
     
     if returnData == "": return "sensor error"
  
@@ -144,10 +144,10 @@ while True:
     
     #Using data from plant_type.py
     if sensorStatus["Temperature Sensor"] != 0:
-        if sensorValues["tempsensor"] > plant_type.hi_temp:
+        if sensorValues["tempsensor"] > hi_temp:
             print("Temperature is too high!")
         
-        if sensorValues["tempsensor"] < plant_type.lo_temp:
+        if sensorValues["tempsensor"] < lo_temp:
             print("Temperature is too low!")
 
     #Pump water when conditions are met: soil moisture < 40%, it is daytime, there is a plant and reservoir having somewhat enough water
